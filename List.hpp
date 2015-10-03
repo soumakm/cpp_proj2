@@ -1,65 +1,37 @@
 
 
-#include <algorithm>
-using namespace std;
-
-template <typename Object>
-class List
-{
-  private:    
-    // The basic doubly linked list node.
-    // Nested inside of List, can be public
-    // because the Node is itself private
-    struct Node
-    {
-        Object  data;
-        Node   *prev;
-        Node   *next;
-
-        Node( const Object & d = Object{ }, Node * p = nullptr, Node * n = nullptr )
-          : data{ d }, prev{ p }, next{ n } { }
-        
-        Node( Object && d, Node * p = nullptr, Node * n = nullptr )
-          : data{ std::move( d ) }, prev{ p }, next{ n } { }
-    };
-
-  public:
-    //nested const_iterator class
-    class const_iterator
-    {
-      public:
-  
-        // Public constructor for const_iterator.
-        const_iterator( ) : current{ nullptr }
+         template <typename T>
+        // default zero parameter constructor
+        List<T>::const_iterator::const_iterator() : current{ nullptr }
           { }
 
-        // Return the object stored at the current position.
-        // For const_iterator, this is an accessor with a
-        // const reference return type.
-        const Object & operator* ( ) const
+        // operator*() to return element  
+        template <typename T>  
+        const T & List<T>::const_iterator::operator* ( ) const
           { return retrieve( ); }
         
-        const_iterator & operator++ ( )
+        // increment/decrement operators
+          template <typename T>
+        typename List<T>::const_iterator & List<T>::const_iterator::operator++ ( )
         {
             current = current->next;
             return *this;
         }
-
-        // increment/decrement operators
-        const_iterator operator++ ( int )
+        template <typename T>
+        typename List<T>::const_iterator List<T>::const_iterator::operator++ ( int )
         {
             const_iterator old = *this;
             ++( *this );
             return old;
         }
-
-        const_iterator & operator-- ( )
+        template <typename T>
+        typename List<T>::const_iterator & List<T>::const_iterator::operator-- ( )
         {
             current = current->prev;
             return *this;
         }
-
-        const_iterator operator-- ( int )
+        template <typename T>
+        typename List<T>::const_iterator List<T>::const_iterator::operator-- ( int )
         {
             const_iterator old = *this;
             --( *this );
@@ -67,101 +39,83 @@ class List
         }
         
         // comparison operators    
-        bool operator== ( const const_iterator & rhs ) const
+        template <typename T>
+        bool List<T>::const_iterator::operator== ( const const_iterator & rhs ) const
           { return current == rhs.current; }
-
-        bool operator!= ( const const_iterator & rhs ) const
+        template <typename T>  
+        bool List<T>::const_iterator::operator!= ( const const_iterator & rhs ) const
           { return !( *this == rhs ); }
 
-      protected:
-        Node *current;
-
-        // Protected helper in const_iterator that returns the object
-        // stored at the current position. Can be called by all
-        // three versions of operator* without any type conversions.
-        Object & retrieve( ) const
+        // retrieve the element refers to
+        template <typename T>
+        T & List<T>::const_iterator::retrieve( ) const
           { return current->data; }
 
-        // Protected constructor for const_iterator.
-        // Expects a pointer that represents the current position.
-        const_iterator( Node *p ) :  current{ p }
+        // protected constructor
+        template <typename T>
+        List<T>::const_iterator::const_iterator( Node *p ) :  current{ p }
           { }
-        
-        friend class List<Object>;
-    };
+
 
     // nested iterator class
-    class iterator : public const_iterator
-    {
-      public:
-
-        // Public constructor for iterator.
-        // Calls the base-class constructor.
-        // Must be provided because the private constructor
-        // is written; otherwise zero-parameter constructor
-        // would be disabled.
-        iterator( )
+        template <typename T>
+        List<T>::iterator::iterator()
           { }
-
-        Object & operator* ( )
+        template <typename T>
+        T & List<T>::iterator::operator* ( )
           { return const_iterator::retrieve( ); }
 
-        // Return the object stored at the current position.
-        // For iterator, there is an accessor with a
-        // const reference return type and a mutator with
-        // a reference return type. The accessor is shown first.
-        const Object & operator* ( ) const
+        template <typename T>  
+        const T & List<T>::iterator::operator* ( ) const
           { return const_iterator::operator*( ); }
         
         // increment/decrement operators
-        iterator & operator++ ( )
+        template <typename T>  
+        typename List<T>::iterator & List<T>::iterator::operator++ ( )
         {
             this->current = this->current->next;
             return *this;
         }
-
-        iterator operator++ ( int )
+        template <typename T>
+        typename List<T>::iterator List<T>::iterator::operator++ ( int )
         {
             iterator old = *this;
             ++( *this );
             return old;
         }
-
-        iterator & operator-- ( )
+        template <typename T>
+        typename List<T>::iterator & List<T>::iterator::operator-- ( )
         {
             this->current = this->current->prev;
             return *this;
         }
-
-        iterator operator-- ( int )
+        template <typename T>
+        typename List<T>::iterator List<T>::iterator::operator-- ( int )
         {
             iterator old = *this;
             --( *this );
             return old;
         }
 
-      protected:
-        // Protected constructor for iterator.
-        // Expects the current position.
-        iterator( Node *p ) : const_iterator{ p }
+        template <typename T>
+        List<T>::iterator::iterator( Node *p ) : const_iterator{ p }
           { }
 
-        friend class List<Object>;
-    };
-
-  public:
-    // default zero parameter constructor
-    List( )
+     // default zero parameter constructor
+    template <typename T>      
+    List<T>::List( )
       { init( ); }
-    // copy constructor  
-    List( const List & rhs )
+    // copy constructor
+    template <typename T>  
+    List<T>::List( const List<T> & rhs )
     {
         init( );
         for( auto & x : rhs )
             push_back( x );
     }
     // move constructor
-    List( List && rhs )
+    template <typename T>
+    List<T>::List( List<T> && rhs )
       : theSize{ rhs.theSize }, head{ rhs.head }, tail{ rhs.tail }
     {
         rhs.theSize = 0;
@@ -169,14 +123,16 @@ class List
         rhs.tail = nullptr;
     }
     // num elements with value of val, check
-    explicit List(int num, const T& val = T{})
+    template <typename T>
+    List<T>::List(int num, const T& val)
     {
         init( );
         for (int i=0; i< num; i++)
             push_back( val );
     }
     // constructs with elements [start, end), check
-    List(const_iterator start, const_iterator end)
+    template <typename T>
+    List<T>::List(const_iterator start, const_iterator end)
     {
         init( );
         while(start != end)
@@ -186,7 +142,8 @@ class List
         }    
     }
     // destructor
-    ~List( )
+    template <typename T>
+    List<T>::~List( )
     {
         clear( );
         delete head;
@@ -194,77 +151,85 @@ class List
     }
 
     // copy assignment operator
-    List & operator= ( const List & rhs )
+    template <typename T>
+    const typename cop4530::List<T> & List<T>::operator= ( const List<T> & rhs )
     {
-        List copy = rhs;
-        std::swap( *this, copy );
+        List<T> copy = rhs;
+       // std::swap( *this, copy );
         return *this;
     }
     
     // move assignment operator
-    List & operator= ( List && rhs )
+    template <typename T>
+    typename cop4530::List<T> & List<T>::operator= ( List<T> && rhs )
     {    
-        std::swap( theSize, rhs.theSize );
-        std::swap( head, rhs.head );
-        std::swap( tail, rhs.tail );
+      //  std::swap( theSize, rhs.theSize );
+      //  std::swap( head, rhs.head );
+      //  std::swap( tail, rhs.tail );
         
         return *this;
     }
     
     // member functions
     // Return number of elements currently in the list.
-    int size( ) const
+    template <typename T>
+    int List<T>::size( ) const
       { return theSize; }
 
     // Return true if the list is empty, false otherwise.
-    bool empty( ) const
+    template <typename T>  
+    bool List<T>::empty( ) const
       { return size( ) == 0; }
 
-    void clear( )
+    template <typename T>  
+    void List<T>::clear( )
     {
         while( !empty( ) )
             pop_front( );
     }
     // reverse the order of the elements, check
-    void reverse()
+    template <typename T>
+    void List<T>::reverse()
     {
 
     }
     // front, back, push_front, push_back, pop_front, and pop_back
     // are the basic double-ended queue operations.
-    Object & front( )
+    template <typename T>
+    T & List<T>::front( )
       { return *begin( ); }
-
-    const Object & front( ) const
+    template <typename T>  
+    const T & List<T>::front( ) const
       { return *begin( ); }
-
-    Object & back( )
+    template <typename T>  
+    T & List<T>::back( )
       { return *--end( ); }
-
-    const Object & back( ) const
+    template <typename T>  
+    const T & List<T>::back( ) const
       { return *--end( ); }
-
-    void push_front( const Object & x )
+    template <typename T>
+    void List<T>::push_front( const T & x )
       { insert( begin( ), x ); }
-
-    void push_back( const Object & x )
+    template <typename T>
+    void List<T>::push_back( const T & x )
       { insert( end( ), x ); }
-
-    void push_front( Object && x )
+    template <typename T>
+    void List<T>::push_front( T && x )
       { insert( begin( ), std::move( x ) ); }
-
-    void push_back( Object && x )
-      { insert( end( ), std::move( x ) ); }
-
-    void pop_front( )
-      { erase( begin( ) ); }
-
-    void pop_back( )
-      { erase( --end( ) ); }
+    template <typename T>
+    void List<T>::push_back( T && x )
+      { insert( end(), std::move( x ) ); }
+    template <typename T>
+    void List<T>::pop_front()
+      { erase( begin() ); }
+    template <typename T>
+    void List<T>::pop_back()
+      { erase( --end() ); }
     // remove all elements with value = val, check
-    void remove(const Object & val)
+    template <typename T>  
+    void List<T>::remove(const T & val)
     {
-        iterator itr = begin( );
+        iterator itr = begin();
         while(itr != end( ))
         {
             if(*itr == val)
@@ -275,33 +240,37 @@ class List
 
     }  
     // print out all elements. ofc is deliminitor, check
-    void print(std::ostream & os, char ofc = ' ') const  
+    template <typename T>
+    void List<T>::print(std::ostream & os, char ofc ) const  
     {
         const_iterator itr = begin();
-        while(*itr != end())
+        while(itr != end())
         {
-            out << *itr << ofc << endl;
+            os << *itr << ofc << std::endl;
             ++itr;
         }
     }
     // Return iterator representing beginning of list.
     // Mutator version is first, then accessor version.
-    iterator begin( )
+    template <typename T>
+    typename List<T>::iterator List<T>::begin()
       { return iterator( head->next ); }
-
-    const_iterator begin( ) const
+    template <typename T>
+    typename List<T>::const_iterator List<T>::begin() const
       { return const_iterator( head->next ); }
 
     // Return iterator representing endmarker of list.
     // Mutator version is first, then accessor version.
-    iterator end( )
+    template <typename T>  
+    typename List<T>::iterator List<T>::end()
       { return iterator( tail ); }
-
-    const_iterator end( ) const
+    template <typename T>
+    typename List<T>::const_iterator List<T>::end() const
       { return const_iterator( tail ); }
 
     // Insert x before itr.
-    iterator insert( iterator itr, const Object & x )
+    template <typename T>
+    typename List<T>::iterator List<T>::insert( iterator itr, const T & x )
     {
         Node *p = itr.current;
         ++theSize;
@@ -309,7 +278,8 @@ class List
     }
 
     // Insert x before itr.
-    iterator insert( iterator itr, Object && x )
+    template <typename T>
+    typename List<T>::iterator List<T>::insert( iterator itr, T && x )
     {
         Node *p = itr.current;
         ++theSize;
@@ -317,7 +287,8 @@ class List
     }
     
     // Erase item at itr.
-    iterator erase( iterator itr )
+    template <typename T>
+    typename List<T>::iterator List<T>::erase( iterator itr )
     {
         Node *p = itr.current;
         iterator retVal( p->next );
@@ -328,21 +299,16 @@ class List
 
         return retVal;
     }
-
-    iterator erase( iterator from, iterator to )
+    template <typename T>
+    typename List<T>::iterator List<T>::erase( iterator from, iterator to )
     {
         for( iterator itr = from; itr != to; )
             itr = erase( itr );
 
         return to;
     }
-
-  private:
-    int   theSize;
-    Node *head;
-    Node *tail;
-
-    void init( )
+    template <typename T>
+    void List<T>::init( )
     {
         theSize = 0;
         head = new Node;
@@ -351,18 +317,17 @@ class List
         tail->prev = head;
     }
 
-};
 // overloading comparison operators, check
-    template <typename Object>
-        bool operator==(const List<Object> & lhs, const List<Object> & rhs)
+    template <typename T>
+        bool operator==(const List<T> & lhs, const List<T> & rhs)
         {
-            List<Object>::iterator itr_lhs = lhs.begin();
-            List<Object>::iterator itr_lhs = lhs.begin();
+            typename List<T>::const_iterator itr_lhs = lhs.begin();
+            typename List<T>::const_iterator itr_rhs = rhs.begin();
             if(lhs.size() == rhs.size())
             {
                 if(*itr_lhs != *itr_rhs)
                     return false;
-                while(itr_lhs != itr_lhs.end())
+                while(itr_lhs != lhs.end())
                 {
                     if(*itr_lhs != *itr_rhs)
                         return false;
@@ -374,17 +339,16 @@ class List
                 return false;
         }
     //check
-    template <typename Object>
-        bool operator!=(const List<Object> & lhs, const List<Object> &rhs)
+    template <typename T>
+        bool operator!=(const List<T> & lhs, const List<T> &rhs)
         {
             return !operator==(lhs, rhs);
 
         }
     // overloading output operator, check
-    template <typename Object>
-        std::ostream & operator<<(std::ostream &os, const List<Object> &l) 
+    template <typename T>
+        std::ostream & operator<<(std::ostream &os, const List<T> &l) 
         {
-            l.print(os, ', ');
-
+            l.print(os, ',');
+            return os;
         }  
-

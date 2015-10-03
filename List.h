@@ -21,6 +21,7 @@ namespace cop4530 {
 
 			public:
 				//nested const_iterator class
+				
 				class const_iterator {
 					public:
 						const_iterator(); // default zero parameter constructor

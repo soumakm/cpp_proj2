@@ -21,7 +21,7 @@ int main() {
 		l1.push_back(i);
 	}
 	cout << "size " << l1.size() << endl;
-
+    
 	itr = l1.begin();
 	cout << *itr++;
 	for (; itr != l1.end(); ++itr) {
@@ -140,6 +140,7 @@ int main() {
 	}
 
 	/* testing string list */
+	
 	cout << "Testing list with string values ..." << endl;
 	cout << "pushing back " << num << " string values" << endl;
 
@@ -248,6 +249,5 @@ int main() {
 	} else {
 		cout << "they contain different values" << endl;
 	}
-
 
 }
