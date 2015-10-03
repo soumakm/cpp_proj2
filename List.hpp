@@ -154,8 +154,19 @@
     template <typename T>
     const typename cop4530::List<T> & List<T>::operator= ( const List<T> & rhs )
     {
-        List<T> copy = rhs;
-       // std::swap( *this, copy );
+      //  List<T> copy = rhs;
+      //  List<T> lhs;
+        if (&rhs == this)
+            return *this;
+      //  std::swap( *this, copy );
+        Node *tmp = rhs.head;
+        clear();
+        for(int i =0; i< rhs.theSize;i++)
+        {
+            push_back(new Node(*tmp));
+            tmp = tmp->next;
+        }
+
         return *this;
     }
     
@@ -166,6 +177,9 @@
       //  std::swap( theSize, rhs.theSize );
       //  std::swap( head, rhs.head );
       //  std::swap( tail, rhs.tail );
+        theSize = rhs.theSize;
+        head = rhs.head;
+        tail = rhs.tail;
         
         return *this;
     }
@@ -191,7 +205,17 @@
     template <typename T>
     void List<T>::reverse()
     {
-
+     /*   Node *next;
+        Node *prev = nullptr;
+        Node *tmp = head;
+        while (tmp != nullptr)
+        {
+            next  = tmp->next;  
+            tmp->next = prev;   
+            prev = tmp;
+            tmp = next;
+        }
+        head = prev;*/
     }
     // front, back, push_front, push_back, pop_front, and pop_back
     // are the basic double-ended queue operations.
