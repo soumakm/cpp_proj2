@@ -205,17 +205,22 @@
     template <typename T>
     void List<T>::reverse()
     {
-     /*   Node *next;
-        Node *prev = nullptr;
-        Node *tmp = head;
-        while (tmp != nullptr)
+     
+        Node *tmp = nullptr;
+        Node *current = head;
+        tail = current;
+        while( current != NULL)
         {
-            next  = tmp->next;  
-            tmp->next = prev;   
-            prev = tmp;
-            tmp = next;
+            tmp = current->next;
+            current->next= current->prev;
+            current->prev = tmp;
+            //current = current->prev;
+        
+            if(current->prev == NULL)
+                head = current;
+            
+            current = current->prev;
         }
-        head = prev;*/
     }
     // front, back, push_front, push_back, pop_front, and pop_back
     // are the basic double-ended queue operations.
@@ -268,11 +273,13 @@
     void List<T>::print(std::ostream & os, char ofc ) const  
     {
         const_iterator itr = begin();
+        
         while(itr != end())
         {
-            os << *itr << ofc << std::endl;
+            os << *itr << ofc ;
             ++itr;
         }
+        os << std::endl;
     }
     // Return iterator representing beginning of list.
     // Mutator version is first, then accessor version.
@@ -373,6 +380,6 @@
     template <typename T>
         std::ostream & operator<<(std::ostream &os, const List<T> &l) 
         {
-            l.print(os, ',');
+            l.print(os, ' ');
             return os;
         }  
